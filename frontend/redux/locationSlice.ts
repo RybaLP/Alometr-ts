@@ -66,8 +66,8 @@ const locationSlice = createSlice({
             state.error = null;
         })
         .addCase(fetchLocations.fulfilled, (state, action : PayloadAction<Location[]>) =>{
-            state.loading = true;
-            state.error = null;
+            state.loading = false;
+            state.locations = action.payload;
         })
         .addCase(fetchLocations.rejected, (state, action)=>{
             state.loading = false,

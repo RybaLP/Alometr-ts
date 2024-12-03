@@ -1,54 +1,58 @@
-import React, {useEffect, useState} from "react";
-import {fetchHistory} from "../../api/locationService";
-import { deleteLocation } from "../../api/locationService";
-import { UseSelector } from "react-redux";
+import React, { useEffect } from 'react';
+import { useAppSelector, useAppDispatch } from '../../redux/hooks'; // Typowane hooki Redux
+import {fetchLocations, removeLocation} from '../../redux/locationSlice'; // Akcja usuwania lokalizacji
 
-interface Location {
-  _id: string, 
-  locationName: string, 
-  coordinates : {lat : number , lng : number};
-}
 
-const SearchHistory = () => {
+const SearchHistory: React.FC = () => {
+  const locations = useAppSelector((state) => state.locations.locations); // Pobieramy lokalizacje ze stanu Redux
+  const dispatch = useAppDispatch(); // Hook do wysyłania akcji Redux
 
-    const [locations, setLocations] = useState<Location[]>([]);
-    const [error, setError] = useState<string | null>(null);
+  const handleDelete = (id: string) => {
+    dispatch(removeLocation(id)); // Wywołanie akcji usuwania
+  };
 
-    const hadnleDelete = async(id : string) =>{
-        console.log("Deleting location with id:", id); 
-        await deleteLocation(id);
-        fetchData();
-    }
+  useEffect(()=>{
+    dispatch(fetchLocations());
+  }, [dispatch, locations]);
 
-    const fetchData = async () => {
-      try {
-        const data = await fetchHistory();
-        console.log("dane pobrane z api : ", data);
-        setLocations(data); // Ustawienie lokalizacji w stanie
-      } catch (err) {
-        console.error("Błąd podczas pobierania lokalizacji:", err);
-        setError("Nie udało się pobrać lokalizacji");
-      }
-    };
-    
-    useEffect(() => {
-      fetchData();
-    }, []);
-
-    return (
-      <div style={{ textAlign: 'center' }}>
-      <h3>Poprzednie wyszukiwania</h3>
-      <ul style={{ listStyleType: 'none', padding: 0, display: "flex", flexDirection: "column-reverse" }}>
+  return (
+    <div style={{ textAlign: 'center' }}>
+      <h3>Historia wyszukiwań</h3>
+      <ul
+        style={{
+          listStyleType: 'none',
+          padding: 0,
+          display: 'flex',
+          flexDirection: 'column-reverse',
+          alignItems: 'center',
+        }}
+      >
         {locations.map((location) => (
-          <li key={location._id}style={{ cursor: 'pointer', marginBottom: '5px' }}>
-            {location.locationName};
-            <button onClick={()=>{hadnleDelete(location._id)}}>DELETE</button>
+          <li
+            key={location._id}
+            style={{
+              cursor: 'pointer',
+              marginBottom: '10px',
+              border: '1px solid #ccc',
+              padding: '10px',
+              width: '80%',
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+            }}
+          >
+            <span>{location.locationName}</span>
+            <button
+              onClick={() => handleDelete(location._id)}
+              style={{ background: 'red', color: 'white', border: 'none', padding: '5px 10px', cursor: 'pointer' }}
+            >
+              Usuń
+            </button>
           </li>
         ))}
       </ul>
     </div>
-    );
-
+  );
 };
-  
-  export default SearchHistory;
+
+export default SearchHistory;
