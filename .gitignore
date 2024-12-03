@@ -1,0 +1,17 @@
+# Ignoruj foldery node_modules w obu częściach projektu
+/backend/node_modules
+/frontend/node_modules
+
+# Ignoruj pliki tymczasowe i cache
+*.log
+*.env
+*.env.local
+*.env.*.local
+.DS_Store
+
+# Opcjonalnie: Ignoruj pliki build w frontend (jeśli istnieją)
+frontend/build/
+backend/build/
+
+# Jeśli korzystasz z narzędzi do testowania, możesz też dodać ich pliki
+coverage/
